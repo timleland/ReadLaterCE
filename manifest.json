@@ -1,0 +1,16 @@
+{
+    "manifest_version": 2,
+    "name": "Simple Read Later",
+    "short_name": "SRL",
+    "description": "Save Urls to read later and sync",
+    "permissions": [
+        "storage",
+        "tabs"
+    ],
+    "version": "0.0.0.3",
+    "browser_action": {
+        "default_title": "Read Later",
+        "default_icon": "assets/img/icon.png",
+        "default_popup": "popup.html"
+    }
+}
