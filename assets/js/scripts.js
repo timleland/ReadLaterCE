@@ -126,14 +126,15 @@ $(document).ready(function() {
     getLinks({}, refreshLinkList);
 
     $('.readH3').click(function() {
-        $('.readLinks').toggle("slow");
+        $('.readLinks').toggle("fast");
+        $('.deleteAllRead').toggle("fast");
     });
 
     $('.saveButton').click(function() {
         getCurrentTab({}, addLink);
     });
 
-    $('.deleteReadButton').click(function() {
+    $('.deleteAllRead').click(function() {
         getLinks({}, clearReadLinks);
     });
 
