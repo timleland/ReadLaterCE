@@ -1,11 +1,11 @@
-html {
+    html {
     font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 .readSection {
     display: none;
 }
 body {
-    width: 270px;
+    width: 330px;
     background-color: #f9f8fb;
 }
 .pullRight {
