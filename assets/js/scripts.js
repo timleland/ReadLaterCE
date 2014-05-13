@@ -1,58 +1,58 @@
-var getCurrentTab = function(passThu, callBack) {
+var getCurrentTab = function(passThru, callBack) {
     chrome.tabs.query({
         currentWindow: true,
         active: true
     }, function(tabs) {
-        passThu.currentTab = tabs[0];
-        callBack(passThu);
+        passThru.currentTab = tabs[0];
+        callBack(passThru);
     });
 };
 
-var getLinks = function(passThu, callBack) {
+var getLinks = function(passThru, callBack) {
     chrome.storage.sync.get("links", function(currentLinks) {
-        passThu.currentLinks = currentLinks.links;
-        if (currentLinks.links === undefined ? passThu.linksExist = 0 : passThu.linksExist = 1);
-        callBack(passThu);
+        passThru.currentLinks = currentLinks.links;
+        if (currentLinks.links === undefined ? passThru.linksExist = 0 : passThru.linksExist = 1);
+        callBack(passThru);
     });
 };
 
-var updateLinks = function(passThu, callBack) {
+var updateLinks = function(passThru, callBack) {
     chrome.storage.sync.set({
-        'links': passThu.currentLinks
+        'links': passThru.currentLinks
     }, function() {
-        callBack(passThu);
+        callBack(passThru);
     });
 };
 
-var addLink = function(passThu, callBack) {
+var addLink = function(passThru, callBack) {
     //If getLinks has not been run get existing links
-    if (passThu.currentLinks === undefined && passThu.linksExist === undefined) {
-        getLinks(passThu, addLink);
+    if (passThru.currentLinks === undefined && passThru.linksExist === undefined) {
+        getLinks(passThru, addLink);
         return;
         //If getLinks func has been run but no links exist add first ink
-    } else if (passThu.linksExist === 0) {
-        passThu.currentLinks = new Array();
-        console.log('First Add: ' + passThu.currentTab);
+    } else if (passThru.linksExist === 0) {
+        passThru.currentLinks = new Array();
+        console.log('First Add: ' + passThru.currentTab);
 
     }
     var dateAdded = new Date();
-    passThu.currentLinks.push({
-        'url': passThu.currentTab.url,
-        'title': passThu.currentTab.title,
+    passThru.currentLinks.push({
+        'url': passThru.currentTab.url,
+        'title': passThru.currentTab.title,
         'isRead': 0,
         'dateAdded': dateAdded.toISOString()
     });
-    updateLinks(passThu, refreshLinkList)
+    updateLinks(passThru, refreshLinkList)
 };
 
-var refreshLinkList = function(passThu) {
+var refreshLinkList = function(passThru) {
     $('.unreadLinks').empty();
     $('.readLinks').empty();
     var displayList = '';
     var linkType = '';
     var unReadCount = 0;
     var readCount = 0;
-    var linksArray = passThu.currentLinks;
+    var linksArray = passThru.currentLinks;
 
     if (linksArray != undefined) {
         for (var i = 0; i < linksArray.length; i++) {
@@ -70,7 +70,7 @@ var refreshLinkList = function(passThu) {
             if (linksArray[i].title.length > 35) {
                 truncatedTitle = truncatedTitle.concat('...');
             }
-            $(displayList).append('<li class="' + linkType + '"><a target="_blank" data-arrayId="' + i + '" href="' + linksArray[i].url + '">' + truncatedTitle +
+            $(displayList).append('<li class="' + linkType + '"><a target="_blank" data-arrayId="' + i + '" href="' + linksArray[i].url + '">' + getFavicon(linksArray[i].url) + ' ' + truncatedTitle +
                 '</a><i class="fa fa-times pullRight closeIcon"></i><ul class="subList"><li> <abbr class="timeago" title="' + linksArray[i].dateAdded +
                 '"></abbr> </li></ul></li>');
         }
@@ -90,8 +90,8 @@ var clearLinks = function() {
     });
 };
 
-var clearReadLinks = function(passThu) {
-    var currentLinks = passThu.currentLinks;
+var clearReadLinks = function(passThru) {
+    var currentLinks = passThru.currentLinks;
     if (currentLinks != undefined) {
         //Loop through array in reverse to avoid errors caused by array being re-indexed
         for (var i = currentLinks.length - 1; i >= 0; i--) {
@@ -101,7 +101,7 @@ var clearReadLinks = function(passThu) {
                 currentLinks.splice(i, 1);
             }
         }
-        updateLinks(passThu, refreshLinkList);
+        updateLinks(passThru, refreshLinkList);
     }
 };
 
@@ -112,17 +112,60 @@ var debugLinks = function() {
     });
 };
 
-var archiveLink = function(passThu) {
-    passThu.currentLinks[passThu.readId].isRead = 1;
-    updateLinks(passThu, refreshLinkList);
+var archiveLink = function(passThru) {
+    passThru.currentLinks[passThru.readId].isRead = 1;
+    updateLinks(passThru, refreshLinkList);
 };
 
-var deleteLink = function(passThu) {
-    passThu.currentLinks.splice(passThu.readId, 1);
-    updateLinks(passThu, refreshLinkList);
+var deleteLink = function(passThru) {
+    passThru.currentLinks.splice(passThru.readId, 1);
+    updateLinks(passThru, refreshLinkList);
+};
+
+var getFavicon = function(url) {
+    var domain = url.replace('http://', '').replace('https://', '').split(/[/?#]/)[0];
+    var imgUrl = "http://www.google.com/s2/favicons?domain=" + domain;
+
+    var img = document.createElement("img");
+    img.setAttribute('src', imgUrl);
+    return img.outerHTML;
+};
+
+var getSiteTitle = function() {
+    $.ajax({
+        url: "http://textance.herokuapp.com/title/www.bbc.co.uk",
+        complete: function(data) {
+            console.log(data.responseText);
+        }
+    });
+};
+
+var rightClickSaveLink = function() {
+    return function(info, tab) {
+        console.log(info);
+
+    };
+};
+
+var googleAnalytics = function() {
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-50925323-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
 };
 
 $(document).ready(function() {
+
+    googleAnalytics();
+
     getLinks({}, refreshLinkList);
 
     $('.readH3').click(function() {
@@ -139,17 +182,17 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '.unreadLinks a', function() {
-        var passThu = {
+        var passThru = {
             'readId': parseInt($(this).attr("data-arrayId"))
         }
-        getLinks(passThu, archiveLink);
+        getLinks(passThru, archiveLink);
     });
 
     $(document).on('click', '.closeIcon', function() {
-        var passThu = {
+        var passThru = {
             'readId': parseInt($(this).prev().attr("data-arrayId"))
         }
-        getLinks(passThu, deleteLink);
+        getLinks(passThru, deleteLink);
     })
 
 });

@@ -5,12 +5,22 @@
     "description": "Save Urls to read later and sync between browsers.",
     "permissions": [
         "storage",
-        "tabs"
+        "tabs",
+        "contextMenus",
+        "http://*/",
+        "https://*/"
     ],
-    "version": "0.0.0.5",
+    "background": {
+        "scripts": ["assets/js/jquery.min.js", "assets/js/backgroundScript.js"]
+    },
+    "version": "0.0.0.9",
     "browser_action": {
         "default_title": "Read Later",
         "default_icon": "assets/img/icon.png",
         "default_popup": "popup.html"
-    }
+    },
+    "icons": {
+        "16": "assets/img/icon.png"
+    },
+    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
 }
