@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Read Later",
     "short_name": "RL",
-    "description": "Save Urls to read later and sync between browsers.",
+    "description": "Save tabs to read later and automatically sync between browsers.",
     "permissions": [
         "storage",
         "tabs",
@@ -13,7 +13,7 @@
     "background": {
         "scripts": ["assets/js/jquery.min.js", "assets/js/backgroundScript.js"]
     },
-    "version": "0.0.0.9",
+    "version": "0.0.1.0",
     "browser_action": {
         "default_title": "Read Later",
         "default_icon": "assets/img/icon.png",
