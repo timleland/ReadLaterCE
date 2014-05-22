@@ -9,14 +9,6 @@ var getCurrentTab = function(passThru, callBack) {
     });
 };
 
-var getLinksOld = function(passThru, callBack) {
-    chrome.storage.sync.get("links", function(currentLinks) {
-        passThru.currentLinks = currentLinks.links;
-        if (currentLinks.links === undefined ? passThru.linksExist = 0 : passThru.linksExist = 1);
-        callBack(passThru);
-    });
-};
-
 var getLinks = function(passThru, callBack) {
     if (passThru.key !== undefined) {
         chrome.storage.sync.get(passThru.key, function(link) {
@@ -31,19 +23,6 @@ var getLinks = function(passThru, callBack) {
             callBack(passThru);
         });
     }
-};
-
-var updateLinks = function(passThru, callBack) {
-    passThru.currentLinks.forEach(function(link) {
-        debugger;
-        var key = link.title
-        var newLink = {};
-        newLink[key] = link;
-        chrome.storage.sync.set(newLink, function() {
-            console.log('Saved', key, testPrefs);
-        });
-    });
-    callBack(passThru);
 };
 
 var addLink = function(passThru, callBack) {
@@ -97,7 +76,7 @@ var refreshLinkList = function(passThru) {
             if (linksArray[i][1].title.length > 35) {
                 truncatedTitle = truncatedTitle.concat('...');
             }
-            $(displayList).append('<li class="' + linkType + '"><a target="_blank" data-key="' + linksArray[i][1].title + '" href="' + linksArray[i][1].url + '">' + getFavicon(linksArray[i][1].url) + ' ' + truncatedTitle +
+            $(displayList).append('<li class="' + linkType + '"><a title="' + linksArray[i][1].url + '" target="_blank" data-key="' + linksArray[i][1].title + '" href="' + linksArray[i][1].url + '">' + getFavicon(linksArray[i][1].url) + ' ' + truncatedTitle +
                 '</a><i class="fa fa-times pullRight closeIcon"></i><ul class="subList"><li> <abbr class="timeago" title="' + linksArray[i][1].dateAdded +
                 '"></abbr> </li></ul></li>');
         }
@@ -111,12 +90,6 @@ var refreshLinkList = function(passThru) {
     }
 };
 
-var clearLinks = function(key) {
-    chrome.storage.sync.clear(function(data) {
-        console.log("All Links Cleared");
-    });
-};
-
 var clearReadLinks = function(passThru) {
     var currentLinks = passThru.currentLinks;
     if (currentLinks != undefined) {
@@ -127,13 +100,6 @@ var clearReadLinks = function(passThru) {
             }
         }
     }
-};
-
-
-var debugLinks = function() {
-    chrome.storage.sync.get(function(data) {
-        console.log(data);
-    });
 };
 
 var archiveLink = function(passThru) {
@@ -152,7 +118,6 @@ var deleteLink = function(passThru) {
 var getFavicon = function(url) {
     var domain = url.replace('http://', '').replace('https://', '').split(/[/?#]/)[0];
     var imgUrl = "http://www.google.com/s2/favicons?domain=" + domain;
-
     var img = document.createElement("img");
     img.setAttribute('src', imgUrl);
     return img.outerHTML;
@@ -165,12 +130,6 @@ var getSiteTitle = function() {
             console.log(data.responseText);
         }
     });
-};
-
-var rightClickSaveLink = function() {
-    return function(info, tab) {
-        console.log(info);
-    };
 };
 
 var googleAnalytics = function() {
@@ -188,27 +147,40 @@ var googleAnalytics = function() {
     })();
 };
 
+var debugLinks = function() {
+    chrome.storage.sync.get(function(data) {
+        console.log(data);
+    });
+};
+
+var clearLinks = function(key) {
+    chrome.storage.sync.clear(function(data) {
+        console.log("All Links Cleared");
+    });
+};
+
 var updater = function() {
-    chrome.storage.sync.get('links', function(data) {
-        debugger;
-        if (!$.isEmptyObject(data)) {
-            getLinksOld({}, updater2);
+    chrome.storage.sync.get("links", function(currentLinks) {
+        if (!$.isEmptyObject(currentLinks)) {
+            var links = currentLinks.links;
+            links.forEach(function(link) {
+                var key = link.title
+                var newLink = {};
+                newLink[key] = link;
+                chrome.storage.sync.set(newLink, function() {
+                    console.log('Saved', key, testPrefs);
+                });
+            });
+            chrome.storage.sync.remove('links', function(data) {
+                console.log('Old links removed');
+            });
         }
     });
 };
 
-var updater2 = function(passThru) {
-    updateLinks(passThru, null);
-
-    chrome.storage.sync.remove('links', function(data) {
-        console.log(data);
-    });
-
-}
-
 $(document).ready(function() {
 
-    updater();
+    updater(); //Move all links to key/value
 
     googleAnalytics();
     getLinks({}, refreshLinkList);
@@ -226,8 +198,7 @@ $(document).ready(function() {
         getLinks({}, clearReadLinks);
     });
 
-    $(document).on('click', '.unreadLinks a', function(e) {
-        e.preventDefault();
+    $(document).on('click', '.unreadLinks a', function() {
         var passThru = {
             'key': $(this).attr("data-key")
         }

@@ -16,7 +16,6 @@ var saveLink = function(info) {
                 title: siteTitle,
                 isRead: 0
             };
-            debugger;
             addLink(passThru)
         }
     });
