@@ -3,12 +3,13 @@ var getCurrentTab = function(passThru, callBack) {
         currentWindow: true,
         active: true
     }, function(tabs) {
-        passThru.currentTab = tabs[0];
+        passThru.link = tabs[0];
+        passThru.link.isRead = 0;
         callBack(passThru);
     });
 };
 
-var getLinks = function(passThru, callBack) {
+var getLinksOld = function(passThru, callBack) {
     chrome.storage.sync.get("links", function(currentLinks) {
         passThru.currentLinks = currentLinks.links;
         if (currentLinks.links === undefined ? passThru.linksExist = 0 : passThru.linksExist = 1);
@@ -16,33 +17,51 @@ var getLinks = function(passThru, callBack) {
     });
 };
 
+var getLinks = function(passThru, callBack) {
+    if (passThru.key !== undefined) {
+        chrome.storage.sync.get(passThru.key, function(link) {
+            passThru.link = link;
+            if (link === undefined ? passThru.linksExist = 0 : passThru.linksExist = 1);
+            callBack(passThru);
+        });
+    } else {
+        chrome.storage.sync.get(function(currentLinks) {
+            passThru.currentLinks = currentLinks;
+            if (currentLinks === undefined ? passThru.linksExist = 0 : passThru.linksExist = 1);
+            callBack(passThru);
+        });
+    }
+};
+
 var updateLinks = function(passThru, callBack) {
-    chrome.storage.sync.set({
-        'links': passThru.currentLinks
-    }, function() {
-        callBack(passThru);
+    passThru.currentLinks.forEach(function(link) {
+        debugger;
+        var key = link.title
+        var newLink = {};
+        newLink[key] = link;
+        chrome.storage.sync.set(newLink, function() {
+            console.log('Saved', key, testPrefs);
+        });
     });
+    callBack(passThru);
 };
 
 var addLink = function(passThru, callBack) {
-    //If getLinks has not been run get existing links
-    if (passThru.currentLinks === undefined && passThru.linksExist === undefined) {
-        getLinks(passThru, addLink);
-        return;
-        //If getLinks func has been run but no links exist add first ink
-    } else if (passThru.linksExist === 0) {
-        passThru.currentLinks = new Array();
-        console.log('First Add: ' + passThru.currentTab);
-
-    }
     var dateAdded = new Date();
-    passThru.currentLinks.push({
-        'url': passThru.currentTab.url,
-        'title': passThru.currentTab.title,
-        'isRead': 0,
+    link = {
+        'url': passThru.link.url,
+        'title': passThru.link.title,
+        'isRead': passThru.link.isRead,
         'dateAdded': dateAdded.toISOString()
+    };
+
+    var key = passThru.link.title
+    var newLink = {};
+    newLink[key] = link;
+    chrome.storage.sync.set(newLink, function() {
+        console.log('Saved', key);
+        getLinks({}, refreshLinkList);
     });
-    updateLinks(passThru, refreshLinkList)
 };
 
 var refreshLinkList = function(passThru) {
@@ -52,11 +71,19 @@ var refreshLinkList = function(passThru) {
     var linkType = '';
     var unReadCount = 0;
     var readCount = 0;
-    var linksArray = passThru.currentLinks;
+    var linksObject = passThru.currentLinks;
+
+    var linksArray = [];
+    for (var key in linksObject) {
+        linksArray.push([linksObject[key].dateAdded, linksObject[key]])
+    }
+    linksArray.sort(function(a, b) {
+        return new Date(b[0]) - new Date(a[0])
+    })
 
     if (linksArray != undefined) {
         for (var i = 0; i < linksArray.length; i++) {
-            if (linksArray[i].isRead === 0) {
+            if (linksArray[i][1].isRead === 0) {
                 unReadCount++;
                 displayList = '.unreadLinks';
                 linkType = 'unRead';
@@ -65,13 +92,13 @@ var refreshLinkList = function(passThru) {
                 displayList = '.readLinks';
                 linkType = 'read';
             }
-            var truncatedTitle = linksArray[i].title.substring(0, 35);
+            var truncatedTitle = linksArray[i][1].title.substring(0, 35);
 
-            if (linksArray[i].title.length > 35) {
+            if (linksArray[i][1].title.length > 35) {
                 truncatedTitle = truncatedTitle.concat('...');
             }
-            $(displayList).append('<li class="' + linkType + '"><a target="_blank" data-arrayId="' + i + '" href="' + linksArray[i].url + '">' + getFavicon(linksArray[i].url) + ' ' + truncatedTitle +
-                '</a><i class="fa fa-times pullRight closeIcon"></i><ul class="subList"><li> <abbr class="timeago" title="' + linksArray[i].dateAdded +
+            $(displayList).append('<li class="' + linkType + '"><a target="_blank" data-key="' + linksArray[i][1].title + '" href="' + linksArray[i][1].url + '">' + getFavicon(linksArray[i][1].url) + ' ' + truncatedTitle +
+                '</a><i class="fa fa-times pullRight closeIcon"></i><ul class="subList"><li> <abbr class="timeago" title="' + linksArray[i][1].dateAdded +
                 '"></abbr> </li></ul></li>');
         }
     }
@@ -84,8 +111,8 @@ var refreshLinkList = function(passThru) {
     }
 };
 
-var clearLinks = function() {
-    chrome.storage.sync.remove("links", function(data) {
+var clearLinks = function(key) {
+    chrome.storage.sync.clear(function(data) {
         console.log("All Links Cleared");
     });
 };
@@ -93,33 +120,33 @@ var clearLinks = function() {
 var clearReadLinks = function(passThru) {
     var currentLinks = passThru.currentLinks;
     if (currentLinks != undefined) {
-        //Loop through array in reverse to avoid errors caused by array being re-indexed
-        for (var i = currentLinks.length - 1; i >= 0; i--) {
-            console.log(currentLinks[i]);
-            debugger;
-            if (currentLinks[i].isRead === 1) {
-                currentLinks.splice(i, 1);
+        for (var key in currentLinks) {
+            if (currentLinks[key].isRead === 1) {
+                passThru.key = key;
+                deleteLink(passThru, null);
             }
         }
-        updateLinks(passThru, refreshLinkList);
     }
 };
 
 
 var debugLinks = function() {
-    chrome.storage.sync.get("links", function(data) {
+    chrome.storage.sync.get(function(data) {
         console.log(data);
     });
 };
 
 var archiveLink = function(passThru) {
-    passThru.currentLinks[passThru.readId].isRead = 1;
-    updateLinks(passThru, refreshLinkList);
+    passThru.link = passThru.link[passThru.key];
+    passThru.link.isRead = 1;
+    addLink(passThru, null);
 };
 
 var deleteLink = function(passThru) {
-    passThru.currentLinks.splice(passThru.readId, 1);
-    updateLinks(passThru, refreshLinkList);
+    chrome.storage.sync.remove(passThru.key, function(data) {
+        console.log("Link cleared");
+        getLinks({}, refreshLinkList);
+    });
 };
 
 var getFavicon = function(url) {
@@ -143,7 +170,6 @@ var getSiteTitle = function() {
 var rightClickSaveLink = function() {
     return function(info, tab) {
         console.log(info);
-
     };
 };
 
@@ -162,10 +188,29 @@ var googleAnalytics = function() {
     })();
 };
 
+var updater = function() {
+    chrome.storage.sync.get('links', function(data) {
+        debugger;
+        if (!$.isEmptyObject(data)) {
+            getLinksOld({}, updater2);
+        }
+    });
+};
+
+var updater2 = function(passThru) {
+    updateLinks(passThru, null);
+
+    chrome.storage.sync.remove('links', function(data) {
+        console.log(data);
+    });
+
+}
+
 $(document).ready(function() {
 
-    googleAnalytics();
+    updater();
 
+    googleAnalytics();
     getLinks({}, refreshLinkList);
 
     $('.readH3').click(function() {
@@ -181,16 +226,17 @@ $(document).ready(function() {
         getLinks({}, clearReadLinks);
     });
 
-    $(document).on('click', '.unreadLinks a', function() {
+    $(document).on('click', '.unreadLinks a', function(e) {
+        e.preventDefault();
         var passThru = {
-            'readId': parseInt($(this).attr("data-arrayId"))
+            'key': $(this).attr("data-key")
         }
         getLinks(passThru, archiveLink);
     });
 
     $(document).on('click', '.closeIcon', function() {
         var passThru = {
-            'readId': parseInt($(this).prev().attr("data-arrayId"))
+            'key': $(this).prev().attr("data-key")
         }
         getLinks(passThru, deleteLink);
     })

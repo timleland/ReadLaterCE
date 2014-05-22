@@ -11,53 +11,35 @@ var saveLink = function(info) {
             }
 
             var passThru = {};
-            passThru.currentTab = {
+            passThru.link = {
                 url: info.linkUrl,
-                title: siteTitle
+                title: siteTitle,
+                isRead: 0
             };
-
+            debugger;
             addLink(passThru)
         }
     });
 };
 
-var getLinks = function(passThru, callBack) {
-    chrome.storage.sync.get("links", function(currentLinks) {
-        passThru.currentLinks = currentLinks.links;
-        if (currentLinks.links === undefined ? passThru.linksExist = 0 : passThru.linksExist = 1);
-        callBack(passThru);
-    });
-};
-
-var addLink = function(passThru) {
-    //If getLinks has not been run get existing links
-    if (passThru.currentLinks === undefined && passThru.linksExist === undefined) {
-        getLinks(passThru, addLink);
-        return;
-        //If getLinks func has been run but no links exist add first ink
-    } else if (passThru.linksExist === 0) {
-        passThru.currentLinks = new Array();
-        console.log('First Add: ' + passThru.currentTab);
-
-    }
+var addLink = function(passThru, callBack) {
     var dateAdded = new Date();
-    passThru.currentLinks.push({
-        'url': passThru.currentTab.url,
-        'title': passThru.currentTab.title,
-        'isRead': 0,
+    link = {
+        'url': passThru.link.url,
+        'title': passThru.link.title,
+        'isRead': passThru.link.isRead,
         'dateAdded': dateAdded.toISOString()
+    };
+
+    var key = passThru.link.title
+    var newLink = {};
+    newLink[key] = link;
+    chrome.storage.sync.set(newLink, function() {
+        console.log('Saved', key);
     });
-    updateLinks(passThru)
 };
 
-var updateLinks = function(passThru) {
-    chrome.storage.sync.set({
-        'links': passThru.currentLinks
-    }, function() {
-        console.log('Link added');
-        console.log(passThru);
-    });
-};
+
 
 chrome.contextMenus.create({
     title: "Save Link",
