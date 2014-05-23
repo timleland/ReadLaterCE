@@ -6,3 +6,4 @@ ReadLater Chrome Extension
  - Your saved tabs will automatically sync between computers
  - Keep your browser fast by limiting the number of open tabs
  - Right on any link to add it to ReadLater
+ - Save hundreds of links

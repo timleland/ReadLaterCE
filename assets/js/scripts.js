@@ -168,11 +168,13 @@ var updater = function() {
                 var newLink = {};
                 newLink[key] = link;
                 chrome.storage.sync.set(newLink, function() {
-                    console.log('Saved', key, testPrefs);
+                    console.log('Saved', key);
+
                 });
             });
             chrome.storage.sync.remove('links', function(data) {
                 console.log('Old links removed');
+                getLinks({}, refreshLinkList);
             });
         }
     });

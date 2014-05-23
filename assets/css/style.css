@@ -1,82 +1,80 @@
-    html {
-        font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
-    .readSection {
-        display: none;
-    }
-    body {
-        width: 365px;
-        background-color: #f9f8fb;
-    }
-    .pullRight {
-        float:right;
-    }
-    ul .unRead, ul .read {
-        list-style: none;
-    }
-    ul {
-        padding-left: 5px;
-        margin-top: 5px;
-    }
-    h3 {
-        margin-bottom: 0;
-        color: rgb(2, 78, 104);
-    }
-    .readLinks {
-        display: none;
-    }
-    .readH3 {
-        cursor:pointer;
-        display: inline-block;
-    }
-    .closeIcon {
-        visibility:hidden;
-        cursor: pointer;
-        color: rgb(255, 162, 64);
-    }
-    .unRead:hover .closeIcon, .read:hover .closeIcon {
-        visibility:visible;
-    }
-    .subList {
-        font-size: 9px;
-        list-style: none;
-        margin-right: 20px;
-        text-align: right;
-    }
-    a {
-        text-decoration: none;
-        color: rgb(6, 121, 159);
-    }
-    a:hover {
-        color:rgb(255, 131, 0);
-        text-decoration: underline;
-    }
-    .saveButton {
-        display: block;
-        width: 100%;
-        color: #fff;
-        background-color: rgb(255, 162, 64);
-        padding: 10px 16px;
-        font-size: 18px;
-        line-height: 1.33;
-        border-radius: 6px;
-        margin-bottom: 0;
-        font-weight: 400;
-        cursor: pointer;
-        border: 1px solid transparent;
-        white-space: nowrap;
-    }
-    .saveButton:hover {
-        background-color: rgb(255, 131, 0);
-    }
-    .deleteAllRead {
-        font-size: 9px;
-        display: none;
-        color: rgb(255, 162, 64);
-    }
-    .deleteAllRead:hover {
-        color: rgb(166, 85, 0);
-    }
-    .timeago {
-        color: rgb(166, 85, 0);
-    }
+html {
+    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif
+}
+.readSection {
+    display:none
+}
+body {
+    width:365px;
+    background-color:#f9f8fb
+}
+.pullRight {
+    float:right
+}
+ul .read, ul .unRead {
+    list-style:none
+}
+ul {
+    padding-left:5px;
+    margin-top:5px
+}
+h3 {
+    margin-bottom:0;
+    color:#024e68
+}
+.readLinks {
+    display:none
+}
+.readH3 {
+    cursor:pointer;
+    display:inline-block;
+    margin-top: 5px;
+}
+.closeIcon {
+    visibility:hidden;
+    cursor:pointer;
+    color:#ffa240
+}
+.read:hover .closeIcon, .unRead:hover .closeIcon {
+    visibility:visible
+}
+.subList {
+    font-size:9px;
+    list-style:none;
+    margin-right:20px;
+    text-align:right
+}
+a {
+    text-decoration:none;
+    color:#06799f
+}
+a:hover {
+    color:#ff8300;
+    text-decoration:underline
+}
+.saveButton {
+    display:block;
+    width:100%;
+    color:#fff;
+    background-color:#ffa240;
+    padding:10px 16px;
+    font-size:18px;
+    line-height:1.33;
+    border-radius:6px;
+    margin-bottom:0;
+    font-weight:400;
+    cursor:pointer;
+    border:1px solid transparent;
+    white-space:nowrap
+}
+.saveButton:hover {
+    background-color:#ff8300
+}
+.deleteAllRead {
+    font-size:9px;
+    display:none;
+    color:#ffa240
+}
+.deleteAllRead:hover, .timeago {
+    color:#a65500
+}
