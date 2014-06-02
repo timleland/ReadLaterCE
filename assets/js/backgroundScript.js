@@ -2,13 +2,16 @@ var saveLink = function(info) {
     $.ajax({
         url: info.linkUrl,
         success: function(data) {
-            console.log(data);
             var title = data.match(/<title>(.*)<\/title>/);
             if (title !== null) {
                 var siteTitle = title[0].replace('<title>', '').replace('</title>', '');
             } else {
                 var siteTitle = info.linkUrl;
             }
+            //Remove html entities by converting them to html
+            var span = document.createElement('span');
+            span.innerHTML = siteTitle;
+            siteTitle = span.innerHTML;
 
             var passThru = {};
             passThru.link = {
