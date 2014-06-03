@@ -185,7 +185,12 @@ $(document).ready(function() {
     updater(); //Move all links to key/value
 
     googleAnalytics();
-    getLinks({}, refreshLinkList);
+    setTimeout(function() {
+        getLinks({}, refreshLinkList);
+        $('.spinner').fadeOut(function() {
+            $('.linkList').fadeIn();
+        });
+    }, 1000);
 
     $('.readH3').click(function() {
         $('.readLinks').toggle("fast");
