@@ -6,7 +6,7 @@ html {
 }
 body {
     width:365px;
-    background-color:#f9f8fb
+    background-color:#f9f8fb;
 }
 .pullRight {
     float:right
@@ -28,7 +28,7 @@ h3 {
 .readH3 {
     cursor:pointer;
     display:inline-block;
-    margin-top: 5px;
+    margin-top:5px
 }
 .closeIcon {
     visibility:hidden;
@@ -79,24 +79,24 @@ a:hover {
     color:#a65500
 }
 .linkList {
-    display: none;
+    display:none
 }
 .spinner {
-    width: 50px;
-    height: 50px;
-    background-color: #333;
-    margin: 75px auto;
-    -webkit-animation: rotateplane 1.2s infinite ease-in-out;
-    animation: rotateplane 1.2s infinite ease-in-out;
+    width:50px;
+    height:50px;
+    background-color:#333;
+    margin:75px auto;
+    -webkit-animation:rotateplane 1.2s infinite ease-in-out;
+    animation:rotateplane 1.2s infinite ease-in-out
 }
 @-webkit-keyframes rotateplane {
     0% {
-        -webkit-transform: perspective(120px)
+        -webkit-transform:perspective(120px)
     }
     50% {
-        -webkit-transform: perspective(120px) rotateY(180deg)
+        -webkit-transform:perspective(120px) rotateY(180deg)
     }
     100% {
-        -webkit-transform: perspective(120px) rotateY(180deg) rotateX(180deg)
+        -webkit-transform:perspective(120px) rotateY(180deg) rotateX(180deg)
     }
 }

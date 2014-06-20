@@ -8,10 +8,8 @@ var saveLink = function(info) {
             } else {
                 var siteTitle = info.linkUrl;
             }
-            //Remove html entities by converting them to html
-            var span = document.createElement('span');
-            span.innerHTML = siteTitle;
-            siteTitle = span.innerHTML;
+            var siteTitle = $("<div/>").html(siteTitle).text();
+            console.log(siteTitle);
 
             var passThru = {};
             passThru.link = {

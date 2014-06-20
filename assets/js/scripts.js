@@ -44,6 +44,9 @@ var addLink = function(passThru, callBack) {
 };
 
 var refreshLinkList = function(passThru) {
+    $('.spinner').fadeOut(function() {
+        $('.linkList').fadeIn();
+    });
     $('.unreadLinks').empty();
     $('.readLinks').empty();
     var displayList = '';
@@ -187,10 +190,7 @@ $(document).ready(function() {
     googleAnalytics();
     setTimeout(function() {
         getLinks({}, refreshLinkList);
-        $('.spinner').fadeOut(function() {
-            $('.linkList').fadeIn();
-        });
-    }, 1000);
+    }, 100);
 
     $('.readH3').click(function() {
         $('.readLinks').toggle("fast");
