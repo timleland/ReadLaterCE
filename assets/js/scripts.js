@@ -29,12 +29,12 @@ var addLink = function(passThru, callBack) {
     var dateAdded = new Date();
     link = {
         'url': passThru.link.url,
-        'title': passThru.link.title,
+        'title': passThru.link.title.replace('"', ''),//Prevent quotes from being in title
         'isRead': passThru.link.isRead,
         'dateAdded': dateAdded.toISOString()
     };
 
-    var key = passThru.link.title
+    var key = passThru.link.title.replace('"', '')
     var newLink = {};
     newLink[key] = link;
     chrome.storage.sync.set(newLink, function() {
@@ -156,7 +156,7 @@ var debugLinks = function() {
     });
 };
 
-var clearLinks = function(key) {
+var clearLinks = function() {
     chrome.storage.sync.clear(function(data) {
         console.log("All Links Cleared");
     });
@@ -167,7 +167,7 @@ var updater = function() {
         if (!$.isEmptyObject(currentLinks)) {
             var links = currentLinks.links;
             links.forEach(function(link) {
-                var key = link.title
+                var key = link.title.replace('"', '');
                 var newLink = {};
                 newLink[key] = link;
                 chrome.storage.sync.set(newLink, function() {
@@ -183,9 +183,27 @@ var updater = function() {
     });
 };
 
+var updater2 = function() {
+    chrome.storage.sync.get(function(data) {
+        clearLinks();//Clear old links
+        //Re add links without quotes
+        $.each(data, function(index, link) {
+            link.title = link.title.replace('"', '');
+            var key = link.title;
+            var newLink = {};
+            newLink[key] = link;
+            chrome.storage.sync.set(newLink, function() {
+                console.log('Saved', key);
+
+            });
+        });
+    });
+}
+
 $(document).ready(function() {
 
-    updater(); //Move all links to key/value
+    updater(); //Move all links to key/value. May no longer be needed but keeping just in case
+    updater2(); //Remove quotes from keys b/c they cant be deleted
 
     googleAnalytics();
     setTimeout(function() {
