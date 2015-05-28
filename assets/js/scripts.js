@@ -23,7 +23,7 @@ var getLinks = function(passThru, callBack) {
             callBack(passThru);
         });
     }
-};
+}; 
 
 var addLink = function(passThru, callBack) {
     var dateAdded = new Date();
