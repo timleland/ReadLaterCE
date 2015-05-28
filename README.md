@@ -1,5 +1,6 @@
 ReadLater Chrome Extension
 ===========
+Install: https://chrome.google.com/webstore/detail/read-later/hleifpgbhiladknmecmkpgbgfmlnjhoh
 
 **When you find an article that is worth reading but do not have time, ReadLater allows you to save the tab for another time.**
 
