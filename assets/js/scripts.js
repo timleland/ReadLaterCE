@@ -23,7 +23,7 @@ var getLinks = function(passThru, callBack) {
             callBack(passThru);
         });
     }
-}; 
+};
 
 var addLink = function(passThru, callBack) {
     var dateAdded = new Date();
@@ -202,8 +202,20 @@ var updater2 = function() {
 
 $(document).ready(function() {
 
-    updater(); //Move all links to key/value. May no longer be needed but keeping just in case
-    updater2(); //Remove quotes from keys b/c they cant be deleted
+    // Check whether new version is installed
+    chrome.runtime.onInstalled.addListener(function(details){
+        if(details.reason == "install"){
+            console.log("This is a first install!");
+        }else if(details.reason == "update"){
+            var thisVersion = chrome.runtime.getManifest().version;
+            console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+
+            if(details.previousVersion == '0.0.2.0'){
+                updater2(); //Remove quotes from keys b/c they cant be deleted
+            }
+        }
+    });
+    //updater(); //Move all links to key/value. May no longer be needed but keeping just in case
 
     googleAnalytics();
     setTimeout(function() {
