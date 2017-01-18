@@ -1,3 +1,5 @@
+var _gaq = _gaq || [];
+
 var getCurrentTab = function(passThru, callBack) {
     chrome.tabs.query({
         currentWindow: true,
@@ -41,6 +43,8 @@ var addLink = function(passThru, callBack) {
         console.log('Saved', key);
         getLinks({}, refreshLinkList);
     });
+
+    _gaq.push(['_trackEvent', 'Link saved', 'clicked']);
 };
 
 var refreshLinkList = function(passThru) {
@@ -136,7 +140,6 @@ var getSiteTitle = function() {
 };
 
 var googleAnalytics = function() {
-    var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-50925323-1']);
     _gaq.push(['_trackPageview']);
 
@@ -201,7 +204,6 @@ var updater2 = function() {
 }
 
 $(document).ready(function() {
-
     // Check whether new version is installed
     chrome.runtime.onInstalled.addListener(function(details){
         if(details.reason == "install"){
@@ -218,6 +220,8 @@ $(document).ready(function() {
     //updater(); //Move all links to key/value. May no longer be needed but keeping just in case
 
     googleAnalytics();
+    _gaq.push(['_trackEvent', 'Extension Opened', 'clicked']);
+
     setTimeout(function() {
         getLinks({}, refreshLinkList);
     }, 100);

@@ -39,6 +39,18 @@ var addLink = function(passThru, callBack) {
     });
 };
 
+chrome.runtime.onInstalled.addListener(function(details){
+    if(details.reason == "install"){
+        setTimeout(function(){
+            window.open('https://weather.timleland.com/');
+         }, 3000);
+    }else if(details.reason == "update"){
+        setTimeout(function(){
+            window.open('https://weather.timleland.com/');
+         }, 3000);
+    }
+});
+
 
 
 chrome.contextMenus.create({
