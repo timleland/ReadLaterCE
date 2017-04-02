@@ -1,8 +1,6 @@
 ReadLater Chrome Extension
 ===========
-Blog: http://timleland.com/
-
-Weather Extension: https://weather.timleland.com/
+More info: https://timleland.com/read-later-extension/
 
 Install: https://chrome.google.com/webstore/detail/read-later/hleifpgbhiladknmecmkpgbgfmlnjhoh
 
