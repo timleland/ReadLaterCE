@@ -1,4 +1,3 @@
-[![Project Sponsored By ES6.io](https://img.shields.io/badge/👍_Project_Sponsored_By-ES6.io Tutorials-brightgreen.svg?style=flat-square)](https://ES6.io/friend/TIM)
 ReadLater Chrome Extension
 ===========
 Blog: http://timleland.com/
