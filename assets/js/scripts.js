@@ -31,7 +31,7 @@ var addLink = function(passThru, callBack) {
     var dateAdded = new Date();
     link = {
         'url': passThru.link.url,
-        'title': passThru.link.title.replace('"', ''),//Prevent quotes from being in title
+        'title': passThru.link.title.replace('"', ''), //Prevent quotes from being in title
         'isRead': passThru.link.isRead,
         'dateAdded': dateAdded.toISOString()
     };
@@ -51,6 +51,7 @@ var refreshLinkList = function(passThru) {
     $('.spinner').fadeOut(function() {
         $('.linkList').fadeIn();
     });
+
     $('.unreadLinks').empty();
     $('.readLinks').empty();
     var displayList = '';
@@ -63,6 +64,7 @@ var refreshLinkList = function(passThru) {
     for (var key in linksObject) {
         linksArray.push([linksObject[key].dateAdded, linksObject[key]])
     }
+
     linksArray.sort(function(a, b) {
         return new Date(b[0]) - new Date(a[0])
     })
@@ -83,7 +85,9 @@ var refreshLinkList = function(passThru) {
             if (linksArray[i][1].title.length > 35) {
                 truncatedTitle = truncatedTitle.concat('...');
             }
-            $(displayList).append('<li class="' + linkType + '"><a title="' + linksArray[i][1].url + '" target="_blank" data-key="' + linksArray[i][1].title + '" href="' + linksArray[i][1].url + '">' + getFavicon(linksArray[i][1].url) + ' ' + truncatedTitle +
+
+            var key = encodeURIComponent(linksArray[i][1].title);
+            $(displayList).append('<li class="' + linkType + '"><a title="' + linksArray[i][1].url + '" target="_blank" data-key="' + key + '" href="' + linksArray[i][1].url + '">' + getFavicon(linksArray[i][1].url) + ' ' + truncatedTitle +
                 '</a><i class="fa fa-times pullRight closeIcon"></i><ul class="subList"><li> <abbr class="timeago" title="' + linksArray[i][1].dateAdded +
                 '"></abbr> </li></ul></li>');
         }
@@ -95,6 +99,13 @@ var refreshLinkList = function(passThru) {
     } else {
         $('.readSection').hide();
     }
+
+    var badgeData = {
+        unReadCount: unReadCount,
+        readCount: readCount
+    };
+
+    badge.setBadge(badgeData);
 };
 
 var clearReadLinks = function(passThru) {
@@ -130,15 +141,6 @@ var getFavicon = function(url) {
     return img.outerHTML;
 };
 
-var getSiteTitle = function() {
-    $.ajax({
-        url: "http://textance.herokuapp.com/title/www.bbc.co.uk",
-        complete: function(data) {
-            console.log(data.responseText);
-        }
-    });
-};
-
 var googleAnalytics = function() {
     _gaq.push(['_setAccount', 'UA-50925323-1']);
     _gaq.push(['_trackPageview']);
@@ -165,59 +167,16 @@ var clearLinks = function() {
     });
 };
 
-var updater = function() {
-    chrome.storage.sync.get("links", function(currentLinks) {
-        if (!$.isEmptyObject(currentLinks)) {
-            var links = currentLinks.links;
-            links.forEach(function(link) {
-                var key = link.title.replace('"', '');
-                var newLink = {};
-                newLink[key] = link;
-                chrome.storage.sync.set(newLink, function() {
-                    console.log('Saved', key);
-
-                });
-            });
-            chrome.storage.sync.remove('links', function(data) {
-                console.log('Old links removed');
-                getLinks({}, refreshLinkList);
-            });
-        }
-    });
-};
-
-var updater2 = function() {
-    chrome.storage.sync.get(function(data) {
-        clearLinks();//Clear old links
-        //Re add links without quotes
-        $.each(data, function(index, link) {
-            link.title = link.title.replace('"', '');
-            var key = link.title;
-            var newLink = {};
-            newLink[key] = link;
-            chrome.storage.sync.set(newLink, function() {
-                console.log('Saved', key);
-
-            });
-        });
-    });
-}
-
 $(document).ready(function() {
     // Check whether new version is installed
-    chrome.runtime.onInstalled.addListener(function(details){
-        if(details.reason == "install"){
+    chrome.runtime.onInstalled.addListener(function(details) {
+        if (details.reason == "install") {
             console.log("This is a first install!");
-        }else if(details.reason == "update"){
+        } else if (details.reason == "update") {
             var thisVersion = chrome.runtime.getManifest().version;
             console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
-
-            if(details.previousVersion == '0.0.2.0'){
-                updater2(); //Remove quotes from keys b/c they cant be deleted
-            }
         }
     });
-    //updater(); //Move all links to key/value. May no longer be needed but keeping just in case
 
     googleAnalytics();
     _gaq.push(['_trackEvent', 'Extension Opened', 'clicked']);
@@ -241,16 +200,17 @@ $(document).ready(function() {
 
     $(document).on('click', '.unreadLinks a', function() {
         var passThru = {
-            'key': $(this).attr("data-key")
+            'key': decodeURIComponent($(this).attr("data-key"))
         }
+
         getLinks(passThru, archiveLink);
     });
 
     $(document).on('click', '.closeIcon', function() {
         var passThru = {
-            'key': $(this).prev().attr("data-key")
+            'key': decodeURIComponent($(this).prev().attr("data-key"))
         }
+
         getLinks(passThru, deleteLink);
     })
-
 });
