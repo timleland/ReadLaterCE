@@ -1,102 +1,132 @@
 html {
-    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif
 }
+
 .readSection {
-    display:none
+    display: none
 }
+
 body {
-    width:365px;
-    background-color:#f9f8fb;
+    width: 365px;
+    background-color: #f9f8fb;
 }
+
 .pullRight {
-    float:right
+    float: right
 }
+
 ul .read, ul .unRead {
-    list-style:none
+    list-style: none
 }
+
 ul {
-    padding-left:5px;
-    margin-top:5px
+    padding-left: 5px;
+    margin-top: 5px
 }
+
 h3 {
-    margin-bottom:0;
-    color:#024e68
+    margin-bottom: 0;
+    color: #024e68
 }
+
 .readLinks {
-    display:none
+    display: none
 }
+
 .readH3 {
-    cursor:pointer;
-    display:inline-block;
-    margin-top:5px
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 5px
 }
+
 .closeIcon {
-    visibility:hidden;
-    cursor:pointer;
-    color:#ffa240
+    visibility: hidden;
+    cursor: pointer;
+    color: #ffa240
 }
+
 .read:hover .closeIcon, .unRead:hover .closeIcon {
-    visibility:visible
+    visibility: visible
 }
+
 .subList {
-    font-size:9px;
-    list-style:none;
-    margin-right:20px;
-    text-align:right
+    font-size: 9px;
+    list-style: none;
+    margin-right: 20px;
+    text-align: right
 }
+
 a {
-    text-decoration:none;
-    color:#06799f
+    text-decoration: none;
+    color: #06799f
 }
+
 a:hover {
-    color:#ff8300;
-    text-decoration:underline
+    color: #ff8300;
+    text-decoration: underline
 }
+
 .saveButton {
-    display:block;
-    width:100%;
-    color:#fff;
-    background-color:#ffa240;
-    padding:10px 16px;
-    font-size:18px;
-    line-height:1.33;
-    border-radius:6px;
-    margin-bottom:0;
-    font-weight:400;
-    cursor:pointer;
-    border:1px solid transparent;
-    white-space:nowrap
+    display: block;
+    width: 100%;
+    color: #fff;
+    background-color: #ffa240;
+    padding: 10px 16px;
+    font-size: 18px;
+    line-height: 1.33;
+    border-radius: 6px;
+    margin-bottom: 0;
+    font-weight: 400;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap
 }
+
 .saveButton:hover {
-    background-color:#ff8300
+    background-color: #ff8300
 }
+
 .deleteAllRead {
-    font-size:9px;
-    display:none;
-    color:#ffa240
+    font-size: 9px;
+    display: none;
+    color: #ffa240
 }
+
 .deleteAllRead:hover, .timeago {
-    color:#a65500
+    color: #a65500
 }
+
 .linkList {
-    display:none
+    display: none
 }
+
 .spinner {
-    width:50px;
-    height:50px;
-    background-color:#333;
-    margin:75px auto;
-    -webkit-animation:rotateplane 1.2s infinite ease-in-out;
-    animation:rotateplane 1.2s infinite ease-in-out
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+    margin: 75px auto;
+    -webkit-animation: rotateplane 1.2s infinite ease-in-out;
+    animation: rotateplane 1.2s infinite ease-in-out
 }
+
 @-webkit-keyframes rotateplane {
     0% {
-        -webkit-transform:perspective(120px)
+        -webkit-transform: perspective(120px)
     }
     50% {
-        -webkit-transform:perspective(120px) rotateY(180deg)
+        -webkit-transform: perspective(120px) rotateY(180deg)
     }
     100% {
-        -webkit-transform:perspective(120px) rotateY(180deg) rotateX(180deg)
+        -webkit-transform: perspective(120px) rotateY(180deg) rotateX(180deg)
     }
+}
+
+.info {
+    font-size: 15px;
+    padding-top: 20px;
+}
+
+.info a:focus, .info a:hover {
+    text-decoration: none;
+    outline: none;
 }
