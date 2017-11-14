@@ -17,25 +17,9 @@ var saveLink = function(info) {
                 title: siteTitle,
                 isRead: 0
             };
+
             addLink(passThru)
         }
-    });
-};
-
-var addLink = function(passThru, callBack) {
-    var dateAdded = new Date();
-    link = {
-        'url': passThru.link.url,
-        'title': passThru.link.title,
-        'isRead': passThru.link.isRead,
-        'dateAdded': dateAdded.toISOString()
-    };
-
-    var key = passThru.link.title
-    var newLink = {};
-    newLink[key] = link;
-    chrome.storage.sync.set(newLink, function() {
-        console.log('Saved', key);
     });
 };
 
@@ -46,8 +30,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
 
     }
 });
-
-
 
 chrome.contextMenus.create({
     title: "Save Link",

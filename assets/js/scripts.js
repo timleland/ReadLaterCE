@@ -29,7 +29,9 @@ var getLinks = function(passThru, callBack) {
 
 var addLink = function(passThru, callBack) {
     var dateAdded = new Date();
-    link = {
+
+    passThru.link.title = passThru.link.title + ' (' + passThru.link.url + ')';
+    var link = {
         'url': passThru.link.url,
         'title': passThru.link.title.replace('"', ''), //Prevent quotes from being in title
         'isRead': passThru.link.isRead,
