@@ -1,55 +1,56 @@
 var _gaq = _gaq || [];
 
-var getCurrentTab = function(passThru, callBack) {
+var getCurrentTab = function(callBack) {
     chrome.tabs.query({
         currentWindow: true,
         active: true
     }, function(tabs) {
-        passThru.link = tabs[0];
-        passThru.link.isRead = 0;
-        callBack(passThru);
+        var newLink = {
+            title: tabs[0].title,
+            url: tabs[0].url,
+            isRead: 0
+        }
+
+        callBack(newLink);
+    });
+};
+var getLink = function(key, callBack) {
+    chrome.storage.sync.get(key, function(link) {
+        var linkObject = link[key];
+        linkObject.key = key;
+        callBack(linkObject);
     });
 };
 
-var getLinks = function(passThru, callBack) {
-    if (passThru.key !== undefined) {
-        chrome.storage.sync.get(passThru.key, function(link) {
-            passThru.link = link;
-            if (link === undefined ? passThru.linksExist = 0 : passThru.linksExist = 1);
-            callBack(passThru);
-        });
-    } else {
-        chrome.storage.sync.get(function(currentLinks) {
-            passThru.currentLinks = currentLinks;
-            if (currentLinks === undefined ? passThru.linksExist = 0 : passThru.linksExist = 1);
-            callBack(passThru);
-        });
-    }
+var getLinks = function(callBack) {
+    chrome.storage.sync.get(function(currentLinks) {
+        callBack(currentLinks);
+    });
 };
 
-var addLink = function(passThru, callBack) {
+var addUpdateLink = function(link) {
     var dateAdded = new Date();
-
-    passThru.link.title = passThru.link.title + ' (' + passThru.link.url + ')';
-    var link = {
-        'url': passThru.link.url,
-        'title': passThru.link.title.replace('"', ''), //Prevent quotes from being in title
-        'isRead': passThru.link.isRead,
-        'dateAdded': dateAdded.toISOString()
+    link.title = link.title + ' (' + link.url + ')';
+    var addLink = {
+        url: link.url,
+        title: link.title.replace('"', '').replace('\'', ''), //Prevent quotes from being in title
+        isRead: link.isRead,
+        dateAdded: dateAdded.toISOString()
     };
 
-    var key = passThru.link.title.replace('"', '')
-    var newLink = {};
-    newLink[key] = link;
-    chrome.storage.sync.set(newLink, function() {
-        console.log('Saved', key);
-        getLinks({}, refreshLinkList);
+    var newLinkObject = {};
+    var key = addLink.url;
+    newLinkObject[key] = addLink;
+
+    chrome.storage.sync.set(newLinkObject, function() {
+        console.log('Saved link: ', addLink.url);
+        getLinks(refreshLinkList);
     });
 
     _gaq.push(['_trackEvent', 'Link saved', 'clicked']);
 };
 
-var refreshLinkList = function(passThru) {
+var refreshLinkList = function(linksObject) {
     $('.spinner').fadeOut(function() {
         $('.linkList').fadeIn();
     });
@@ -60,20 +61,21 @@ var refreshLinkList = function(passThru) {
     var linkType = '';
     var unReadCount = 0;
     var readCount = 0;
-    var linksObject = passThru.currentLinks;
 
     var linksArray = [];
     for (var key in linksObject) {
-        linksArray.push([linksObject[key].dateAdded, linksObject[key]])
+        var link = linksObject[key];
+        link.key = key;
+        linksArray.push(link)
     }
 
     linksArray.sort(function(a, b) {
-        return new Date(b[0]) - new Date(a[0])
+        return new Date(b.dateAdded) - new Date(a.dateAdded)
     })
 
     if (linksArray != undefined) {
         for (var i = 0; i < linksArray.length; i++) {
-            if (linksArray[i][1].isRead === 0) {
+            if (linksArray[i].isRead === 0) {
                 unReadCount++;
                 displayList = '.unreadLinks';
                 linkType = 'unRead';
@@ -82,15 +84,15 @@ var refreshLinkList = function(passThru) {
                 displayList = '.readLinks';
                 linkType = 'read';
             }
-            var truncatedTitle = linksArray[i][1].title.substring(0, 35);
+            var truncatedTitle = linksArray[i].title.substring(0, 40);
 
-            if (linksArray[i][1].title.length > 35) {
+            if (linksArray[i].title.length > 40) {
                 truncatedTitle = truncatedTitle.concat('...');
             }
 
-            var key = encodeURIComponent(linksArray[i][1].title);
-            $(displayList).append('<li class="' + linkType + '"><a title="' + linksArray[i][1].url + '" target="_blank" data-key="' + key + '" href="' + linksArray[i][1].url + '">' + getFavicon(linksArray[i][1].url) + ' ' + truncatedTitle +
-                '</a><i class="fa fa-times pullRight closeIcon"></i><ul class="subList"><li> <abbr class="timeago" title="' + linksArray[i][1].dateAdded +
+            var key = encodeURIComponent(linksArray[i].key);
+            $(displayList).append('<li class="' + linkType + '"><a title="' + linksArray[i].url + '" target="_blank" data-key="' + key + '" href="' + linksArray[i].url + '">' + getFavicon(linksArray[i].url) + ' ' + truncatedTitle +
+                '</a><i class="fa fa-times pullRight closeIcon"></i><ul class="subList"><li> <abbr class="timeago" title="' + linksArray[i].dateAdded +
                 '"></abbr> </li></ul></li>');
         }
     }
@@ -110,37 +112,40 @@ var refreshLinkList = function(passThru) {
     badge.setBadge(badgeData);
 };
 
-var clearReadLinks = function(passThru) {
-    var currentLinks = passThru.currentLinks;
-    if (currentLinks != undefined) {
-        for (var key in currentLinks) {
-            if (currentLinks[key].isRead === 1) {
-                passThru.key = key;
-                deleteLink(passThru, null);
+var archiveLink = function(link) {
+    link.isRead = 1;
+    addUpdateLink(link);
+    console.log("Archive link: " + link.url);
+};
+
+var deleteLink = function(link) {
+    chrome.storage.sync.remove(link.key, function(data) {
+        console.log("Link deleted: " + link.url);
+        getLinks(refreshLinkList);
+    });
+};
+
+
+var clearReadLinks = function(links) {
+    if (links != undefined) {
+        for (var link in links) {
+            if (links[link].isRead === 1) {
+                var linkToDelete = links[link];
+                linkToDelete.key = link;
+                deleteLink(linkToDelete);
             }
         }
     }
 };
 
-var archiveLink = function(passThru) {
-    passThru.link = passThru.link[passThru.key];
-    passThru.link.isRead = 1;
-    addLink(passThru, null);
-};
-
-var deleteLink = function(passThru) {
-    chrome.storage.sync.remove(passThru.key, function(data) {
-        console.log("Link cleared");
-        getLinks({}, refreshLinkList);
-    });
-};
-
 var getFavicon = function(url) {
-    var domain = url.replace('http://', '').replace('https://', '').split(/[/?#]/)[0];
-    var imgUrl = "http://www.google.com/s2/favicons?domain=" + domain;
-    var img = document.createElement("img");
-    img.setAttribute('src', imgUrl);
-    return img.outerHTML;
+    if (url) {
+        var domain = url.replace('http://', '').replace('https://', '').split(/[/?#]/)[0];
+        var imgUrl = "http://www.google.com/s2/favicons?domain=" + domain;
+        var img = document.createElement("img");
+        img.setAttribute('src', imgUrl);
+        return img.outerHTML;
+    }
 };
 
 var googleAnalytics = function() {
@@ -184,7 +189,7 @@ $(document).ready(function() {
     _gaq.push(['_trackEvent', 'Extension Opened', 'clicked']);
 
     setTimeout(function() {
-        getLinks({}, refreshLinkList);
+        getLinks(refreshLinkList);
     }, 100);
 
     $('.readH3').click(function() {
@@ -193,26 +198,20 @@ $(document).ready(function() {
     });
 
     $('.saveButton').click(function() {
-        getCurrentTab({}, addLink);
+        getCurrentTab(addUpdateLink);
     });
 
     $('.deleteAllRead').click(function() {
-        getLinks({}, clearReadLinks);
+        getLinks(clearReadLinks);
     });
 
     $(document).on('click', '.unreadLinks a', function() {
-        var passThru = {
-            'key': decodeURIComponent($(this).attr("data-key"))
-        }
-
-        getLinks(passThru, archiveLink);
+        var key = decodeURIComponent($(this).attr("data-key"))
+        getLink(key, archiveLink);
     });
 
     $(document).on('click', '.closeIcon', function() {
-        var passThru = {
-            'key': decodeURIComponent($(this).prev().attr("data-key"))
-        }
-
-        getLinks(passThru, deleteLink);
+        var key = decodeURIComponent($(this).prev().attr("data-key"))
+        getLink(key, deleteLink);
     })
 });
