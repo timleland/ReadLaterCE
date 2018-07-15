@@ -1,5 +1,7 @@
 var _gaq = _gaq || [];
 
+var _badgeData;
+
 var getCurrentTab = function(callBack) {
     chrome.tabs.query({
         currentWindow: true,
@@ -104,15 +106,18 @@ var refreshLinkList = function(linksObject) {
         $('.readSection').hide();
     }
 
-    var badgeData = {
+    _badgeData = {
         unReadCount: unReadCount,
         readCount: readCount
     };
 
-    badge.setBadge(badgeData);
+    badge.setBadge(_badgeData);
 };
 
 var archiveLink = function(link) {
+    _badgeData.unReadCount = _badgeData.unReadCount - 1;
+    _badgeData.readCount = _badgeData.readCount + 1;
+    badge.setBadge(_badgeData);
     link.isRead = 1;
     addUpdateLink(link);
     console.log("Archive link: " + link.url);
