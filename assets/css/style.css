@@ -8,7 +8,10 @@ html {
 
 body {
     width: 365px;
+    max-width: 365px;
     background-color: #f9f8fb;
+    margin: auto;
+    padding: 8px;
 }
 
 .pullRight {
@@ -17,6 +20,10 @@ body {
 
 ul .read, ul .unRead {
     list-style: none
+}
+
+ul .read img, ul .unRead img {
+    vertical-align: bottom;
 }
 
 ul {
@@ -52,8 +59,7 @@ h3 {
 .subList {
     font-size: 9px;
     list-style: none;
-    margin-right: 20px;
-    text-align: right
+    padding-bottom: 10px;
 }
 
 a {
@@ -122,6 +128,7 @@ a:hover {
 }
 
 .info {
+    text-align: right;
     font-size: 15px;
     padding-top: 20px;
 }

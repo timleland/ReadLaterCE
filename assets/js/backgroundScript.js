@@ -1,24 +1,24 @@
 var saveLink = function(info) {
+    var urlToSave = info.linkUrl ? info.linkUrl : info.pageUrl;
     $.ajax({
-        url: info.linkUrl,
+        url: urlToSave,
         success: function(data) {
             var title = data.match(/<title>(.*)<\/title>/);
             if (title !== null) {
                 var siteTitle = title[0].replace('<title>', '').replace('</title>', '');
             } else {
-                var siteTitle = info.linkUrl;
+                var siteTitle = urlToSave;
             }
             var siteTitle = $("<div/>").html(siteTitle).text();
             console.log(siteTitle);
 
-            var passThru = {};
-            passThru.link = {
-                url: info.linkUrl,
+            var link = {
+                url: urlToSave,
                 title: siteTitle,
                 isRead: 0
             };
 
-            addLink(passThru)
+            addUpdateLink(link);
         }
     });
 };
@@ -34,6 +34,22 @@ chrome.runtime.onInstalled.addListener(function(details) {
 chrome.contextMenus.create({
     title: "Save Link",
     type: "normal",
-    contexts: ["link"],
+    contexts: ["link", "page"],
     onclick: saveLink
+});
+
+chrome.commands.onCommand.addListener(function(command) {
+    if (command === 'save-tab') {
+        chrome.tabs.query({
+            active: true,
+            windowType: "normal",
+            currentWindow: true
+        }, function(tabs) {
+            var info = {
+                linkUrl: tabs[0].url
+            }
+
+            saveLink(info);
+        })
+    }
 });

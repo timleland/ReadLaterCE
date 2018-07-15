@@ -22,5 +22,15 @@
     "icons": {
         "16": "assets/img/icon.png"
     },
-    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+    "commands": {
+        "save-tab": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+S",
+                "mac": "Command+Shift+S"
+            },
+            "description": "Save Tab",
+            "global": false
+        }
+    }
 }
