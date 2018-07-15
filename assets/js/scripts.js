@@ -119,7 +119,6 @@ var archiveLink = function(link) {
 };
 
 var deleteLink = function(link) {
-    debugger
     chrome.storage.sync.remove(link.key, function(data) {
         console.log("Link deleted: " + link.url);
         getLinks(refreshLinkList);
@@ -130,7 +129,6 @@ var deleteLink = function(link) {
 var clearReadLinks = function(links) {
     if (links != undefined) {
         for (var link in links) {
-            debugger
             if (links[link].isRead === 1) {
                 var linkToDelete = links[link];
                 linkToDelete.key = link;
