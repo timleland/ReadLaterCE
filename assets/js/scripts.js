@@ -54,7 +54,6 @@ var getLinks = function(callBack) {
 
 var addUpdateLink = function(link) {
 	var dateAdded = new Date();
-	link.title = link.title + ' (' + link.url + ')';
 	var addLink = {
 		url: link.url,
 		title: link.title.replace('"', '').replace("'", ''), //Prevent quotes from being in title
@@ -112,14 +111,14 @@ var refreshLinkList = function(linksObject) {
 				displayList = '.readLinks';
 				linkType = 'read';
 			}
-			var truncatedTitle = linksArray[i].title;
+			var title = linksArray[i].title + '\n' + linksArray[i].url;
 
 			var key = encodeURIComponent(linksArray[i].key);
 			$(displayList).append(
 				'<li class="' +
 					linkType +
 					'"><a title="' +
-					linksArray[i].url +
+					title +
 					'" target="_blank" data-key="' +
 					key +
 					'" href="' +
@@ -127,7 +126,7 @@ var refreshLinkList = function(linksObject) {
 					'">' +
 					getFavicon(linksArray[i].url) +
 					' ' +
-					truncatedTitle +
+					linksArray[i].title +
 					'</a><i class="fa fa-times pullRight closeIcon"></i><ul class="subList"><li> <abbr class="timeago" title="' +
 					linksArray[i].dateAdded +
 					'"></abbr> </li></ul></li>'
