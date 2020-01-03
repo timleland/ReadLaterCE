@@ -19,6 +19,25 @@ var getCurrentTab = function(callBack) {
 		}
 	);
 };
+
+var getAllTabs = function(callBack) {
+	chrome.tabs.query(
+		{
+			currentWindow: true
+		},
+		function(tabs) {
+			var newLinks = tabs.map(function(tab) {
+				return {
+					title: tab.title,
+					url: tab.url,
+					isRead: 0
+				};
+			});
+			callBack(newLinks);
+		}
+	);
+};
+
 var getLink = function(key, callBack) {
 	chrome.storage.sync.get(key, function(link) {
 		var linkObject = link[key];
@@ -53,6 +72,10 @@ var addUpdateLink = function(link) {
 	});
 
 	_gaq.push(['_trackEvent', 'Link saved', 'clicked']);
+};
+
+var addUpdateLinks = function(links) {
+	links.forEach(addUpdateLink);
 };
 
 var refreshLinkList = function(linksObject) {
@@ -214,6 +237,10 @@ $(document).ready(function() {
 
 	$('.saveButton').click(function() {
 		getCurrentTab(addUpdateLink);
+	});
+
+	$('.saveAllButton').click(function() {
+		getAllTabs(addUpdateLinks);
 	});
 
 	$('.deleteAllRead').click(function() {

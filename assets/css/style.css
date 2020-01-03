@@ -80,9 +80,14 @@ a:hover {
 	text-decoration: underline;
 }
 
+.buttonContainer {
+	display: flex;
+	justify-content: space-around;
+}
+
 .saveButton {
 	display: block;
-	width: 100%;
+	width: 47%;
 	color: #fff;
 	background-color: #ffa240;
 	padding: 10px 16px;
