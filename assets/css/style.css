@@ -48,6 +48,9 @@ h3 {
 	visibility: hidden;
 	cursor: pointer;
 	color: #ffa240;
+	display: inline-block;
+    height: 16px;
+    line-height: 16px;
 }
 
 .read:hover .closeIcon,
@@ -62,8 +65,14 @@ h3 {
 }
 
 a {
+	display: inline-block;
+	width: 90%;
+	height: 16px;
 	text-decoration: none;
 	color: #06799f;
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 a:hover {

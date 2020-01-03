@@ -89,11 +89,7 @@ var refreshLinkList = function(linksObject) {
 				displayList = '.readLinks';
 				linkType = 'read';
 			}
-			var truncatedTitle = linksArray[i].title.substring(0, 40);
-
-			if (linksArray[i].title.length > 40) {
-				truncatedTitle = truncatedTitle.concat('...');
-			}
+			var truncatedTitle = linksArray[i].title;
 
 			var key = encodeURIComponent(linksArray[i].key);
 			$(displayList).append(
