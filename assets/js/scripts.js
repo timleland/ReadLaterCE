@@ -238,7 +238,7 @@ $(document).ready(function() {
 		getCurrentTab(addUpdateLink);
 	});
 
-	$('.saveAllButton').click(function() {
+	$('#saveAllButton').click(function() {
 		getAllTabs(addUpdateLinks);
 	});
 
