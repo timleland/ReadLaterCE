@@ -234,7 +234,7 @@ $(document).ready(function() {
 		getLinks(refreshLinkList);
 	}, 100);
 
-	$('.saveButton').click(function() {
+	$('#saveButton').click(function() {
 		getCurrentTab(addUpdateLink);
 	});
 
