@@ -19,6 +19,25 @@ var getCurrentTab = function(callBack) {
 		}
 	);
 };
+
+var getAllTabs = function(callBack) {
+	chrome.tabs.query(
+		{
+			currentWindow: true
+		},
+		function(tabs) {
+			var newLinks = tabs.map(function(tab) {
+				return {
+					title: tab.title,
+					url: tab.url,
+					isRead: 0
+				};
+			});
+			callBack(newLinks);
+		}
+	);
+};
+
 var getLink = function(key, callBack) {
 	chrome.storage.sync.get(key, function(link) {
 		var linkObject = link[key];
@@ -35,7 +54,6 @@ var getLinks = function(callBack) {
 
 var addUpdateLink = function(link) {
 	var dateAdded = new Date();
-	link.title = link.title + ' (' + link.url + ')';
 	var addLink = {
 		url: link.url,
 		title: link.title.replace('"', '').replace("'", ''), //Prevent quotes from being in title
@@ -53,6 +71,10 @@ var addUpdateLink = function(link) {
 	});
 
 	_gaq.push(['_trackEvent', 'Link saved', 'clicked']);
+};
+
+var addUpdateLinks = function(links) {
+	links.forEach(addUpdateLink);
 };
 
 var refreshLinkList = function(linksObject) {
@@ -89,18 +111,14 @@ var refreshLinkList = function(linksObject) {
 				displayList = '.readLinks';
 				linkType = 'read';
 			}
-			var truncatedTitle = linksArray[i].title.substring(0, 40);
-
-			if (linksArray[i].title.length > 40) {
-				truncatedTitle = truncatedTitle.concat('...');
-			}
+			var title = linksArray[i].title + '\n' + linksArray[i].url;
 
 			var key = encodeURIComponent(linksArray[i].key);
 			$(displayList).append(
 				'<li class="' +
 					linkType +
 					'"><a title="' +
-					linksArray[i].url +
+					title +
 					'" target="_blank" data-key="' +
 					key +
 					'" href="' +
@@ -108,7 +126,7 @@ var refreshLinkList = function(linksObject) {
 					'">' +
 					getFavicon(linksArray[i].url) +
 					' ' +
-					truncatedTitle +
+					linksArray[i].title +
 					'</a><i class="fa fa-times pullRight closeIcon"></i><ul class="subList"><li> <abbr class="timeago" title="' +
 					linksArray[i].dateAdded +
 					'"></abbr> </li></ul></li>'
@@ -216,8 +234,12 @@ $(document).ready(function() {
 		getLinks(refreshLinkList);
 	}, 100);
 
-	$('.saveButton').click(function() {
+	$('#saveButton').click(function() {
 		getCurrentTab(addUpdateLink);
+	});
+
+	$('#saveAllButton').click(function() {
+		getAllTabs(addUpdateLinks);
 	});
 
 	$('.deleteAllRead').click(function() {
