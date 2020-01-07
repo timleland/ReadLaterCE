@@ -49,8 +49,8 @@ h3 {
 	cursor: pointer;
 	color: #ffa240;
 	display: inline-block;
-    height: 16px;
-    line-height: 16px;
+	height: 16px;
+	line-height: 16px;
 }
 
 .read:hover .closeIcon,
@@ -71,8 +71,8 @@ a {
 	text-decoration: none;
 	color: #06799f;
 	overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 a:hover {
@@ -90,7 +90,7 @@ a:hover {
 	width: 47%;
 	color: #fff;
 	background-color: #ffa240;
-	padding: 10px 16px;
+	padding: 4px 8px;
 	font-size: 18px;
 	line-height: 1.33;
 	border-radius: 6px;
