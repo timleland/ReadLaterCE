@@ -4,11 +4,11 @@
 	"homepage_url": "https://timleland.com/read-later-extension/",
 	"short_name": "RL",
 	"description": "Save tabs to read later and automatically sync between browsers.",
-	"permissions": ["storage", "tabs", "contextMenus", "http://*/", "https://*/"],
+	"permissions": ["storage", "tabs", "contextMenus"],
 	"background": {
 		"scripts": ["assets/js/jquery.min.js", "assets/js/jquery.timeago.min.js", "assets/js/badge.js", "assets/js/scripts.js", "assets/js/backgroundScript.js"]
 	},
-	"version": "1.7.3",
+	"version": "1.7.5",
 	"browser_action": {
 		"default_title": "Read Later",
 		"default_icon": "assets/img/icon.png",

@@ -1,58 +1,60 @@
-var saveLink = function(info) {
+var saveLink = function (info) {
 	var urlToSave = info.linkUrl ? info.linkUrl : info.pageUrl;
 	$.ajax({
 		url: urlToSave,
-		success: function(data) {
+		success: function (data) {
 			var title = data.match(/<title>(.*)<\/title>/);
 			if (title !== null) {
 				var siteTitle = title[0].replace('<title>', '').replace('</title>', '');
 			} else {
 				var siteTitle = urlToSave;
 			}
-			var siteTitle = $('<div/>')
-				.html(siteTitle)
-				.text();
+			var siteTitle = $('<div/>').html(siteTitle).text();
 			console.log(siteTitle);
 
 			var link = {
 				url: urlToSave,
 				title: siteTitle,
-				isRead: 0
+				isRead: 0,
 			};
 
 			addUpdateLink(link);
-		}
+		},
 	});
 };
 
-chrome.runtime.onInstalled.addListener(function(details) {
+chrome.runtime.onInstalled.addListener(function (details) {
 	if (details.reason == 'install') {
 		window.open('https://timleland.com/read-later-extension/');
 	} else if (details.reason == 'update') {
 	}
 });
 
+if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.setUninstallURL) {
+	chrome.runtime.setUninstallURL('https://timleland.com/extensions/');
+}
+
 chrome.contextMenus.create({
 	title: 'Save Link',
 	type: 'normal',
 	contexts: ['link', 'page'],
-	onclick: saveLink
+	onclick: saveLink,
 });
 
-chrome.commands.onCommand.addListener(function(command) {
+chrome.commands.onCommand.addListener(function (command) {
 	if (command === 'save-tab') {
 		chrome.tabs.query(
 			{
 				active: true,
-				currentWindow: true
+				currentWindow: true,
 			},
-			function(tabs) {
+			function (tabs) {
 				if (!tabs || !tabs.length) {
 					return;
 				}
 
 				var info = {
-					linkUrl: tabs[0].url
+					linkUrl: tabs[0].url,
 				};
 
 				saveLink(info);
